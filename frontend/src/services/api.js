@@ -7,9 +7,9 @@ const API = axios.create({
   },
 });
 
+// Attach JWT token to every request
 API.interceptors.request.use(
   (config) => {
-
     const token = localStorage.getItem("token");
 
     if (token) {
@@ -18,8 +18,23 @@ API.interceptors.request.use(
 
     return config;
   },
+  (error) => Promise.reject(error)
+);
+
+// Handle expired or invalid JWT globally
+API.interceptors.response.use(
+  (response) => response,
 
   (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userEmail");
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("cart");
+
+      window.location.href = "/login";
+    }
+
     return Promise.reject(error);
   }
 );

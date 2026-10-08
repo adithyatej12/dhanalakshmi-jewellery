@@ -2,21 +2,16 @@ package com.authentication.backend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-
 import org.springframework.security.config.http.SessionCreationPolicy;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -37,18 +32,10 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-    // =========================
-    // PASSWORD ENCODER
-    // =========================
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    // =========================
-    // AUTHENTICATION PROVIDER
-    // =========================
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -61,10 +48,6 @@ public class SecurityConfig {
         return provider;
     }
 
-    // =========================
-    // AUTHENTICATION MANAGER
-    // =========================
-
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration)
@@ -72,10 +55,6 @@ public class SecurityConfig {
 
         return configuration.getAuthenticationManager();
     }
-
-    // =========================
-    // CORS CONFIGURATION
-    // =========================
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -117,41 +96,45 @@ public class SecurityConfig {
         return source;
     }
 
-    // =========================
-    // SECURITY FILTER CHAIN
-    // =========================
-
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http) throws Exception {
 
         http
-
-            // Enable CORS
             .cors(cors -> {})
 
-            // REST API → disable CSRF
             .csrf(AbstractHttpConfigurer::disable)
 
-            // JWT → stateless authentication
             .sessionManagement(session ->
                     session.sessionCreationPolicy(
                             SessionCreationPolicy.STATELESS
                     )
             )
 
-            // Database authentication provider
             .authenticationProvider(
                     authenticationProvider()
             )
 
-            // =========================
-            // AUTHORIZATION RULES
-            // =========================
+            // Return 401 when authentication is missing
+            // or the JWT is invalid.
+            .exceptionHandling(exception ->
+                    exception.authenticationEntryPoint(
+                            (request, response, authException) -> {
+                                response.setStatus(
+                                        HttpStatus.UNAUTHORIZED.value()
+                                );
+                                response.setContentType(
+                                        "application/json"
+                                );
+                                response.getWriter().write(
+                                        "{\"error\":\"Unauthorized\"}"
+                                );
+                            }
+                    )
+            )
 
             .authorizeHttpRequests(auth -> auth
 
-                    // Public authentication endpoints
                     .requestMatchers(
                             "/api/auth/register",
                             "/api/auth/login",
@@ -161,24 +144,17 @@ public class SecurityConfig {
                             "/api/auth/reset-password"
                     ).permitAll()
 
-                    // Public product endpoints
                     .requestMatchers(
                             "/api/products",
                             "/api/products/**"
                     ).permitAll()
 
-                    // ADMIN ONLY
                     .requestMatchers(
                             "/api/admin/**"
                     ).hasRole("ADMIN")
 
-                    // Everything else requires login
                     .anyRequest().authenticated()
             )
-
-            // =========================
-            // JWT FILTER
-            // =========================
 
             .addFilterBefore(
                     jwtAuthenticationFilter,
