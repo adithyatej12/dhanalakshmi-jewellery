@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
 
 function ResetPassword() {
-
   const navigate = useNavigate();
 
   const [email, setEmail] = useState(
@@ -15,42 +14,47 @@ function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (event) => {
-
+  const handleResetPassword = async (event) => {
     event.preventDefault();
 
     setError("");
-    setMessage("");
+    setSuccess("");
 
-    if (newPassword.length < 6) {
+    // Strong password validation
+    const strongPassword =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+    if (!strongPassword.test(newPassword)) {
       setError(
-        "Password must be at least 6 characters."
+        "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character."
       );
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError(
-        "Passwords do not match."
-      );
+      setError("Passwords do not match.");
+      return;
+    }
+
+    if (!otp.trim()) {
+      setError("Please enter the OTP.");
       return;
     }
 
     setLoading(true);
 
     try {
-
-      await API.post("/auth/reset-password", {
-        email,
-        otp,
+      const response = await API.post("/auth/reset-password", {
+        email: email.trim().toLowerCase(),
+        otp: otp.trim(),
         newPassword,
       });
 
-      setMessage(
-        "Password reset successfully. Redirecting to login..."
+      setSuccess(
+        response.data || "Password reset successfully."
       );
 
       localStorage.removeItem("resetEmail");
@@ -60,16 +64,14 @@ function ResetPassword() {
       }, 1500);
 
     } catch (error) {
-
-      console.error(error);
+      console.error("RESET PASSWORD ERROR:", error);
 
       setError(
         error.response?.data ||
-        "Unable to reset password."
+        "Unable to reset password. Please try again."
       );
 
     } finally {
-
       setLoading(false);
     }
   };
@@ -85,12 +87,10 @@ function ResetPassword() {
             💎
           </div>
 
-          <h2>
-            Reset Password
-          </h2>
+          <h2>Reset Password</h2>
 
           <p className="text-muted">
-            Enter the OTP sent to your email
+            Reset your Dhanalakshmi Jewellery account password
           </p>
 
         </div>
@@ -101,13 +101,13 @@ function ResetPassword() {
           </div>
         )}
 
-        {message && (
+        {success && (
           <div className="alert alert-success">
-            {message}
+            {success}
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleResetPassword}>
 
           <div className="mb-3">
 
@@ -141,7 +141,7 @@ function ResetPassword() {
               onChange={(event) =>
                 setOtp(event.target.value)
               }
-              placeholder="Enter 6-digit OTP"
+              placeholder="Enter the OTP"
               maxLength="6"
               required
             />
@@ -165,12 +165,17 @@ function ResetPassword() {
               required
             />
 
+            <small className="text-muted">
+              8+ characters with uppercase, lowercase,
+              number and special character.
+            </small>
+
           </div>
 
           <div className="mb-4">
 
             <label className="form-label">
-              Confirm Password
+              Confirm New Password
             </label>
 
             <input
@@ -191,9 +196,7 @@ function ResetPassword() {
             className="btn jewellery-button w-100"
             disabled={loading}
           >
-            {loading
-              ? "Resetting Password..."
-              : "Reset Password"}
+            {loading ? "Resetting Password..." : "Reset Password"}
           </button>
 
         </form>
@@ -204,7 +207,7 @@ function ResetPassword() {
             to="/login"
             className="auth-link"
           >
-            ← Back to Login
+            Back to Login
           </Link>
 
         </div>
