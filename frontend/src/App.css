@@ -1,0 +1,294 @@
+body {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  background-color: #fffaf5;
+  color: #2f241f;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.jewellery-navbar {
+  background-color: #2f241f;
+  padding: 18px 0;
+}
+
+.jewellery-navbar .navbar-brand {
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+}
+
+.jewellery-navbar .nav-link {
+  margin-left: 20px;
+  color: #f8eee5 !important;
+}
+
+.jewellery-navbar .nav-link:hover {
+  color: #d8b26e !important;
+}
+
+/* =========================
+   HERO SECTION
+========================= */
+
+.hero-section {
+  min-height: 600px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(
+      rgba(47, 36, 31, 0.65),
+      rgba(47, 36, 31, 0.65)
+    ),
+    url("https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1800&q=80");
+
+  background-size: cover;
+  background-position: center;
+
+  color: white;
+}
+
+.hero-small-text {
+  letter-spacing: 5px;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+}
+
+.hero-section h1 {
+  font-size: 4rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.hero-description {
+  max-width: 650px;
+  margin: 25px auto;
+
+  font-family: Arial, sans-serif;
+  font-size: 1.1rem;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.jewellery-button {
+  background-color: #c49a5a;
+  border: none;
+  color: white;
+
+  padding: 10px 24px;
+}
+
+.jewellery-button:hover {
+  background-color: #a77d3e;
+  color: white;
+}
+
+/* =========================
+   PRODUCTS
+========================= */
+
+.products-section {
+  padding: 90px 0;
+}
+
+.section-subtitle {
+  color: #b18a4a;
+  letter-spacing: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.products-section h2,
+.about-section h2 {
+  font-size: 2.5rem;
+}
+
+/* =========================
+   PRODUCT CARDS
+========================= */
+
+.product-card {
+  border: none;
+  border-radius: 0;
+
+  background-color: white;
+
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+}
+
+.product-image {
+  height: 250px;
+  overflow: hidden;
+}
+
+.placeholder-image {
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #f1e5d5;
+
+  font-size: 4rem;
+}
+
+.product-card .card-body {
+  padding: 25px;
+}
+
+.product-card .card-title {
+  font-weight: 600;
+}
+
+.product-price {
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: #9b702f;
+}
+
+/* =========================
+   ABOUT SECTION
+========================= */
+
+.about-section {
+  padding: 90px 20px;
+  background-color: #f4eadf;
+}
+
+.about-text {
+  max-width: 750px;
+
+  margin: 25px auto 0;
+
+  font-family: Arial, sans-serif;
+  line-height: 1.8;
+
+  color: #5d5149;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+  background-color: #2f241f;
+
+  color: #f8eee5;
+
+  padding: 40px 0;
+}
+
+.footer h5 {
+  color: #d8b26e;
+  font-size: 1.3rem;
+}
+
+.copyright {
+  margin-top: 15px;
+
+  font-size: 0.8rem;
+
+  color: #b9aaa0;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+  .hero-section {
+    min-height: 500px;
+  }
+
+  .hero-section h1 {
+    font-size: 2.7rem;
+  }
+
+  .hero-description {
+    padding: 0 20px;
+  }
+
+  .products-section h2,
+  .about-section h2 {
+    font-size: 2rem;
+  }
+}
+/* =========================
+   AUTHENTICATION PAGES
+========================= */
+
+.auth-page {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px 20px;
+
+  background:
+    linear-gradient(
+      rgba(47, 36, 31, 0.7),
+      rgba(47, 36, 31, 0.7)
+    ),
+    url("https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1800&q=80");
+
+  background-size: cover;
+  background-position: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+
+  padding: 40px;
+
+  background-color: #fffaf5;
+
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+}
+
+.auth-logo {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.auth-card h2 {
+  color: #2f241f;
+  font-weight: 600;
+}
+
+.auth-card .form-control {
+  border: 1px solid #d8c8b8;
+  border-radius: 0;
+  padding: 12px;
+}
+
+.auth-card .form-control:focus {
+  border-color: #c49a5a;
+  box-shadow: 0 0 0 0.15rem rgba(196, 154, 90, 0.2);
+}
+
+.auth-link {
+  color: #9b702f;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.auth-link:hover {
+  color: #6f4d20;
+}

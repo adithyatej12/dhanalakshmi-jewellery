@@ -1,0 +1,22 @@
+# Maven
+target/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# macOS
+.DS_Store
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Local Spring configuration
+application-local.properties
+application-secret.properties
+
+# Logs
+*.log
