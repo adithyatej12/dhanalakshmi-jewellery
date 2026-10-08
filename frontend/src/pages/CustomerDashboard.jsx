@@ -24,11 +24,6 @@ function CustomerDashboard() {
           error.response?.data
         );
 
-        if (error.response?.status === 401) {
-          logout();
-          return;
-        }
-
         setError("Unable to load customer profile.");
       });
 
@@ -45,11 +40,6 @@ function CustomerDashboard() {
           error.response?.status,
           error.response?.data
         );
-
-        if (error.response?.status === 401) {
-          logout();
-          return;
-        }
 
         setOrdersLoading(false);
       });
@@ -323,6 +313,7 @@ function CustomerDashboard() {
                       <tbody>
 
                         {orders.map((order) => (
+
                           <tr key={order.id}>
 
                             <td>
@@ -358,6 +349,7 @@ function CustomerDashboard() {
                             </td>
 
                           </tr>
+
                         ))}
 
                       </tbody>

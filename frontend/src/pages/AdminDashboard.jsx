@@ -20,21 +20,11 @@ function AdminDashboard() {
 
       setOrders(response.data);
       setLoading(false);
-
     } catch (error) {
       console.error("ADMIN ORDERS ERROR:", error);
 
       if (error.response?.status === 403) {
         setError("Access denied. Admin privileges are required.");
-
-      } else if (error.response?.status === 401) {
-
-        localStorage.removeItem("token");
-        localStorage.removeItem("userEmail");
-        localStorage.removeItem("userRole");
-
-        navigate("/login", { replace: true });
-
       } else {
         setError("Unable to load orders.");
       }
@@ -44,11 +34,9 @@ function AdminDashboard() {
   };
 
   const updateStatus = async (orderId, newStatus) => {
-
     setUpdatingId(orderId);
 
     try {
-
       await API.put(
         `/admin/orders/${orderId}/status`,
         {
@@ -66,16 +54,13 @@ function AdminDashboard() {
             : order
         )
       );
-
     } catch (error) {
-
       console.error("STATUS UPDATE ERROR:", error);
 
       alert(
         error.response?.data ||
         "Unable to update order status."
       );
-
     } finally {
       setUpdatingId(null);
     }
@@ -83,7 +68,6 @@ function AdminDashboard() {
 
   // Logout
   const logout = () => {
-
     // Remove authentication information
     localStorage.removeItem("token");
     localStorage.removeItem("userEmail");
