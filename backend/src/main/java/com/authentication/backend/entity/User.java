@@ -29,6 +29,9 @@ public class User {
 
     private Long otpExpiry;
 
+    // Stores the timestamp when the OTP was last sent
+    private Long otpLastSentAt;
+
     public User() {
     }
 
@@ -94,5 +97,14 @@ public class User {
 
     public void setOtpExpiry(Long otpExpiry) {
         this.otpExpiry = otpExpiry;
+    }
+
+    // OTP resend cooldown
+    public Long getOtpLastSentAt() {
+        return otpLastSentAt;
+    }
+
+    public void setOtpLastSentAt(Long otpLastSentAt) {
+        this.otpLastSentAt = otpLastSentAt;
     }
 }

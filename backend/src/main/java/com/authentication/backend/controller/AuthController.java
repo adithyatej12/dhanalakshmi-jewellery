@@ -6,6 +6,7 @@ import com.authentication.backend.security.JwtService;
 import com.authentication.backend.service.EmailService;
 import com.authentication.backend.service.OtpService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -100,6 +101,7 @@ public class AuthController {
         // Generate OTP
         String otp = otpService.generateOtp();
         long otpExpiry = otpService.getExpiryTime();
+        long otpLastSentAt = System.currentTimeMillis();
 
         User user = new User();
 
@@ -115,6 +117,7 @@ public class AuthController {
 
         user.setOtp(otp);
         user.setOtpExpiry(otpExpiry);
+        user.setOtpLastSentAt(otpLastSentAt);
         user.setVerified(false);
 
         userRepository.save(user);
@@ -173,6 +176,7 @@ public class AuthController {
         // OTP can only be used once
         user.setOtp(null);
         user.setOtpExpiry(null);
+        user.setOtpLastSentAt(null);
 
         userRepository.save(user);
 
@@ -205,11 +209,31 @@ public class AuthController {
                     .body("Email already verified");
         }
 
+        // 60-second OTP resend cooldown
+        long now = System.currentTimeMillis();
+        long cooldown = 60 * 1000L;
+
+        if (user.getOtpLastSentAt() != null &&
+                now - user.getOtpLastSentAt() < cooldown) {
+
+            long remainingSeconds =
+                    (cooldown - (now - user.getOtpLastSentAt())) / 1000;
+
+            return ResponseEntity
+                    .status(HttpStatus.TOO_MANY_REQUESTS)
+                    .body(
+                            "Please wait " +
+                            remainingSeconds +
+                            " seconds before requesting another OTP"
+                    );
+        }
+
         String newOtp = otpService.generateOtp();
         long newOtpExpiry = otpService.getExpiryTime();
 
         user.setOtp(newOtp);
         user.setOtpExpiry(newOtpExpiry);
+        user.setOtpLastSentAt(now);
 
         userRepository.save(user);
 
@@ -374,6 +398,7 @@ public class AuthController {
         // OTP can only be used once
         user.setOtp(null);
         user.setOtpExpiry(null);
+        user.setOtpLastSentAt(null);
 
         userRepository.save(user);
 
