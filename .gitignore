@@ -5,6 +5,11 @@
 # VS Code
 .vscode/
 
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
 # Backend
 backend/target/
 backend/.env
