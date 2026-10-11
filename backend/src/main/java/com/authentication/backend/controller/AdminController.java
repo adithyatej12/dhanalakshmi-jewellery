@@ -1,3 +1,4 @@
+
 package com.authentication.backend.controller;
 
 import com.authentication.backend.entity.Order;
@@ -26,56 +27,23 @@ public class AdminController {
     public ResponseEntity<List<Map<String, Object>>> getAllOrders() {
 
         List<Order> orders = orderRepository.findAll();
-
         List<Map<String, Object>> response = new ArrayList<>();
 
         for (Order order : orders) {
-
-            Map<String, Object> orderData =
-                    new LinkedHashMap<>();
+            Map<String, Object> orderData = new LinkedHashMap<>();
 
             orderData.put("id", order.getId());
             orderData.put("userId", order.getUser().getId());
-            orderData.put(
-                    "customerName",
-                    order.getUser().getName()
-            );
-            orderData.put(
-                    "customerEmail",
-                    order.getUser().getEmail()
-            );
-            orderData.put(
-                    "productName",
-                    order.getProductName()
-            );
-            orderData.put(
-                    "quantity",
-                    order.getQuantity()
-            );
-            orderData.put(
-                    "price",
-                    order.getPrice()
-            );
-            orderData.put(
-                    "totalAmount",
-                    order.getTotalAmount()
-            );
-            orderData.put(
-                    "address",
-                    order.getAddress()
-            );
-            orderData.put(
-                    "phone",
-                    order.getPhone()
-            );
-            orderData.put(
-                    "status",
-                    order.getStatus()
-            );
-            orderData.put(
-                    "orderDate",
-                    order.getOrderDate()
-            );
+            orderData.put("customerName", order.getUser().getName());
+            orderData.put("customerEmail", order.getUser().getEmail());
+            orderData.put("productName", order.getProductName());
+            orderData.put("quantity", order.getQuantity());
+            orderData.put("price", order.getPrice());
+            orderData.put("totalAmount", order.getTotalAmount());
+            orderData.put("address", order.getAddress());
+            orderData.put("phone", order.getPhone());
+            orderData.put("status", order.getStatus());
+            orderData.put("orderDate", order.getOrderDate());
 
             response.add(orderData);
         }
@@ -88,9 +56,7 @@ public class AdminController {
             @PathVariable Long id,
             @RequestBody UpdateOrderStatusRequest request) {
 
-        Order order = orderRepository
-                .findById(id)
-                .orElse(null);
+        Order order = orderRepository.findById(id).orElse(null);
 
         if (order == null) {
             return ResponseEntity.notFound().build();
@@ -98,39 +64,27 @@ public class AdminController {
 
         if (request.getStatus() == null ||
                 request.getStatus().isBlank()) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body("Status is required");
+            return ResponseEntity.badRequest().body("Status is required");
         }
 
-        String status =
-                request.getStatus().toUpperCase();
+        String status = request.getStatus().toUpperCase();
 
         if (!status.equals("PLACED") &&
                 !status.equals("CONFIRMED") &&
                 !status.equals("SHIPPED") &&
                 !status.equals("DELIVERED") &&
                 !status.equals("CANCELLED")) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body("Invalid order status");
+            return ResponseEntity.badRequest().body("Invalid order status");
         }
 
         order.setStatus(status);
-
-        Order updatedOrder =
-                orderRepository.save(order);
+        Order updatedOrder = orderRepository.save(order);
 
         return ResponseEntity.ok(
                 Map.of(
-                        "message",
-                        "Order status updated successfully",
-                        "orderId",
-                        updatedOrder.getId(),
-                        "status",
-                        updatedOrder.getStatus()
+                        "message", "Order status updated successfully",
+                        "orderId", updatedOrder.getId(),
+                        "status", updatedOrder.getStatus()
                 )
         );
     }

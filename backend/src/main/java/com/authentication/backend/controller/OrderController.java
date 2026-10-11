@@ -1,3 +1,4 @@
+
 package com.authentication.backend.controller;
 
 import com.authentication.backend.entity.Order;
@@ -12,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -53,10 +55,10 @@ public class OrderController {
         }
 
         // Validate request
-        if (request.getProductId() == null ||
-                request.getQuantity() == null ||
-                request.getAddress() == null ||
-                request.getPhone() == null) {
+        if (request.getProductId() == null
+                || request.getQuantity() == null
+                || request.getAddress() == null
+                || request.getPhone() == null) {
 
             return ResponseEntity
                     .badRequest()
@@ -65,7 +67,6 @@ public class OrderController {
 
         // Validate quantity
         if (request.getQuantity() <= 0) {
-
             return ResponseEntity
                     .badRequest()
                     .body("Quantity must be greater than zero");
@@ -77,7 +78,6 @@ public class OrderController {
                 .orElse(null);
 
         if (product == null) {
-
             return ResponseEntity
                     .badRequest()
                     .body("Product not found");
@@ -85,76 +85,52 @@ public class OrderController {
 
         // Check stock
         if (product.getStock() <= 0) {
-
             return ResponseEntity
                     .badRequest()
                     .body("Product is out of stock");
         }
 
         if (request.getQuantity() > product.getStock()) {
-
             return ResponseEntity
                     .badRequest()
                     .body(
-                            "Only " +
-                            product.getStock() +
-                            " item(s) available in stock"
+                            "Only "
+                                    + product.getStock()
+                                    + " item(s) available in stock"
                     );
         }
 
         // Get actual price from database
-        double actualPrice =
-                product.getPrice().doubleValue();
+        BigDecimal actualPrice = product.getPrice();
 
-        double totalAmount =
-                actualPrice * request.getQuantity();
+        BigDecimal totalAmount = actualPrice.multiply(
+                BigDecimal.valueOf(request.getQuantity())
+        );
 
         // Create order
         Order order = new Order();
 
         order.setUser(user);
-
-        order.setProductName(
-                product.getName()
-        );
-
-        order.setQuantity(
-                request.getQuantity()
-        );
-
-        order.setPrice(
-                actualPrice
-        );
-
-        order.setTotalAmount(
-                totalAmount
-        );
-
-        order.setAddress(
-                request.getAddress()
-        );
-
-        order.setPhone(
-                request.getPhone()
-        );
-
+        order.setProductName(product.getName());
+        order.setQuantity(request.getQuantity());
+        order.setPrice(actualPrice);
+        order.setTotalAmount(totalAmount);
+        order.setAddress(request.getAddress());
+        order.setPhone(request.getPhone());
         order.setStatus("PLACED");
 
         // Save order
-        Order savedOrder =
-                orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
 
         // Reduce product stock
         product.setStock(
-                product.getStock() -
-                request.getQuantity()
+                product.getStock() - request.getQuantity()
         );
 
         productRepository.save(product);
 
         return ResponseEntity.ok(savedOrder);
     }
-
 
     @GetMapping
     public ResponseEntity<?> getMyOrders(
@@ -167,15 +143,13 @@ public class OrderController {
                 .orElse(null);
 
         if (user == null) {
-
             return ResponseEntity
                     .badRequest()
                     .body("User not found");
         }
 
-        List<Order> orders =
-                orderRepository
-                        .findByUserOrderByOrderDateDesc(user);
+        List<Order> orders = orderRepository
+                .findByUserOrderByOrderDateDesc(user);
 
         return ResponseEntity.ok(orders);
     }
