@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+
 function AdminProducts() {
 
   const navigate = useNavigate();
@@ -337,70 +340,35 @@ function AdminProducts() {
   return (
     <div>
 
-      {/* Navbar */}
-
-      <nav className="navbar navbar-dark jewellery-navbar">
-
-        <div className="container">
-
-          <span
-            className="navbar-brand fw-bold"
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate("/")}
-          >
-            💎 Dhanalakshmi Jewellery
-          </span>
-
-
-          <div>
-
-            <button
-              className="btn btn-outline-light me-2"
-              onClick={() =>
-                navigate("/admin")
-              }
-            >
-              Admin Dashboard
-            </button>
-
-
-            <button
-              className="btn btn-outline-light"
-              onClick={logout}
-            >
-              Logout
-            </button>
-
-          </div>
-
-        </div>
-
-      </nav>
+      <Navbar />
 
 
       {/* Main */}
 
-      <section className="auth-page">
+      <section className="page-hero">
 
         <div className="container">
 
-          {/* Header */}
+          <p className="section-subtitle" style={{ color: "var(--gold-light)" }}>
+            Inventory
+          </p>
 
-          <div className="text-center mb-5">
+          <h1>
+            Product Management
+          </h1>
 
-            <div className="auth-logo">
-              💎
-            </div>
+          <p>
+            Add, edit and manage the Dhanalakshmi Jewellery catalogue.
+          </p>
 
-            <h1>
-              Product Management
-            </h1>
+        </div>
 
-            <p className="text-muted">
-              Add and manage Dhanalakshmi Jewellery products
-            </p>
+      </section>
 
-          </div>
+
+      <section className="products-section" style={{ paddingTop: 60 }}>
+
+        <div className="container">
 
 
           {/* Messages */}
@@ -445,7 +413,7 @@ function AdminProducts() {
 
           {showForm && (
 
-            <div className="card product-card p-4 mb-5">
+            <div className="panel-card lux-form mb-5">
 
               <h4 className="mb-4">
 
@@ -624,14 +592,14 @@ function AdminProducts() {
 
           {/* Products */}
 
-          <div className="card product-card p-4">
+          <div className="panel-card lux-form">
 
             <div className="d-flex justify-content-between align-items-center mb-4">
 
               <div>
 
                 <h4 className="mb-1">
-                  💎 Jewellery Products
+                  <span className="panel-icon">✦</span> Jewellery Products
                 </h4>
 
                 <p className="text-muted mb-0">
@@ -645,14 +613,10 @@ function AdminProducts() {
 
             {products.length === 0 ? (
 
-              <div className="text-center py-5">
+              <div className="empty-state">
 
-                <div
-                  style={{
-                    fontSize: "50px"
-                  }}
-                >
-                  💎
+                <div className="empty-icon">
+                  ✦
                 </div>
 
                 <h5 className="mt-3">
@@ -803,27 +767,7 @@ function AdminProducts() {
       </section>
 
 
-      {/* Footer */}
-
-      <footer className="footer">
-
-        <div className="container text-center">
-
-          <h5>
-            💎 Dhanalakshmi Jewellery
-          </h5>
-
-          <p>
-            Timeless elegance. Crafted with tradition.
-          </p>
-
-          <p className="copyright">
-            © 2026 Dhanalakshmi Jewellery
-          </p>
-
-        </div>
-
-      </footer>
+      <Footer />
 
     </div>
   );

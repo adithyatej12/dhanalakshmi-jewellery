@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+
 function AdminDashboard() {
   const navigate = useNavigate();
 
@@ -134,68 +137,40 @@ function AdminDashboard() {
   return (
     <div>
 
-      {/* Navbar */}
-
-      <nav className="navbar navbar-dark jewellery-navbar">
-        <div className="container">
-
-          <span
-            className="navbar-brand fw-bold"
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate("/")}
-          >
-            💎 Dhanalakshmi Jewellery
-          </span>
-
-          <div>
-
-            <button
-              className="btn btn-outline-light me-2"
-              onClick={() => navigate("/customer")}
-            >
-              Customer Dashboard
-            </button>
-
-            <button
-              className="btn btn-outline-light"
-              onClick={logout}
-            >
-              Logout
-            </button>
-
-          </div>
-
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Dashboard */}
 
-      <section className="auth-page">
+      <section className="page-hero">
 
         <div className="container">
 
-          <div className="text-center mb-5">
+          <p className="section-subtitle" style={{ color: "var(--gold-light)" }}>
+            Administration
+          </p>
 
-            <div className="auth-logo">
-              💎
-            </div>
+          <h1>
+            Admin Dashboard
+          </h1>
 
-            <h1>
-              Admin Dashboard
-            </h1>
+          <p>
+            Orders, inventory and store performance at a glance.
+          </p>
 
-            <p className="text-muted">
-              Manage Dhanalakshmi Jewellery orders
-            </p>
+        </div>
 
-          </div>
+      </section>
+
+      <section className="products-section" style={{ paddingTop: 60 }}>
+
+        <div className="container">
 
           {/* Statistics */}
 
           <div className="row mb-5">
 
             <div className="col-md-3 mb-3">
-              <div className="card product-card p-4 text-center">
+              <div className="stat-card text-center">
 
                 <h6 className="text-muted">
                   TOTAL ORDERS
@@ -209,7 +184,7 @@ function AdminDashboard() {
             </div>
 
             <div className="col-md-3 mb-3">
-              <div className="card product-card p-4 text-center">
+              <div className="stat-card text-center">
 
                 <h6 className="text-muted">
                   REVENUE
@@ -223,7 +198,7 @@ function AdminDashboard() {
             </div>
 
             <div className="col-md-3 mb-3">
-              <div className="card product-card p-4 text-center">
+              <div className="stat-card text-center">
 
                 <h6 className="text-muted">
                   PLACED
@@ -237,7 +212,7 @@ function AdminDashboard() {
             </div>
 
             <div className="col-md-3 mb-3">
-              <div className="card product-card p-4 text-center">
+              <div className="stat-card text-center">
 
                 <h6 className="text-muted">
                   DELIVERED
@@ -254,7 +229,7 @@ function AdminDashboard() {
 
           {/* Orders */}
 
-          <div className="card product-card p-4">
+          <div className="panel-card">
 
             <div className="d-flex justify-content-between align-items-center mb-4">
 
@@ -444,27 +419,7 @@ function AdminDashboard() {
 
       </section>
 
-      {/* Footer */}
-
-      <footer className="footer">
-
-        <div className="container text-center">
-
-          <h5>
-            💎 Dhanalakshmi Jewellery
-          </h5>
-
-          <p>
-            Timeless elegance. Crafted with tradition.
-          </p>
-
-          <p className="copyright">
-            © 2026 Dhanalakshmi Jewellery
-          </p>
-
-        </div>
-
-      </footer>
+      <Footer />
 
     </div>
   );

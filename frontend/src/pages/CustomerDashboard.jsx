@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+
 function CustomerDashboard() {
   const navigate = useNavigate();
 
@@ -89,67 +92,32 @@ function CustomerDashboard() {
           NAVBAR
       ========================== */}
 
-      <nav className="navbar navbar-dark jewellery-navbar">
-        <div className="container">
-          <span
-            className="navbar-brand fw-bold"
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate("/")}
-          >
-            💎 Dhanalakshmi Jewellery
-          </span>
-
-          <div>
-            <button
-              className="btn btn-outline-light me-2"
-              onClick={() => navigate("/jewellery")}
-            >
-              Jewellery
-            </button>
-
-            <button
-              className="btn btn-outline-light me-2"
-              onClick={() => navigate("/cart")}
-            >
-              🛒 Cart
-            </button>
-
-            <button
-              className="btn btn-outline-light"
-              onClick={logout}
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* =========================
           DASHBOARD
       ========================== */}
 
-      <section className="auth-page">
+      <section className="page-hero">
         <div className="container">
 
-          {/* Welcome */}
+          <p className="section-subtitle" style={{ color: "var(--gold-light)" }}>
+            My Account
+          </p>
 
-          <div className="text-center">
-            <div className="auth-logo">
-              💎
-            </div>
+          <h1>
+            Welcome, {profile.name}
+          </h1>
 
-            <h1>
-              Welcome, {profile.name}
-            </h1>
+          <p>
+            {profile.email} — your orders, profile and wishlist live here.
+          </p>
 
-            <p className="lead">
-              {profile.email}
-            </p>
+        </div>
+      </section>
 
-            <p className="text-muted">
-              Welcome to your Dhanalakshmi Jewellery account.
-            </p>
-          </div>
+      <section className="products-section" style={{ paddingTop: 60 }}>
+        <div className="container">
 
           {/* =========================
               PROFILE + COLLECTION
@@ -160,10 +128,10 @@ function CustomerDashboard() {
             {/* Profile */}
 
             <div className="col-md-5 mb-4">
-              <div className="card product-card p-4 h-100">
+              <div className="panel-card h-100">
 
                 <h4 className="mb-4">
-                  👤 My Profile
+                  <span className="panel-icon">👤</span> My Profile
                 </h4>
 
                 <p>
@@ -209,10 +177,10 @@ function CustomerDashboard() {
             {/* Jewellery */}
 
             <div className="col-md-5 mb-4">
-              <div className="card product-card p-4 h-100">
+              <div className="panel-card h-100">
 
                 <h4>
-                  💎 Jewellery Collection
+                  <span className="panel-icon">✦</span> Jewellery Collection
                 </h4>
 
                 <p className="text-muted">
@@ -238,12 +206,12 @@ function CustomerDashboard() {
           <div className="row justify-content-center mt-3">
             <div className="col-md-10">
 
-              <div className="card product-card p-4">
+              <div className="panel-card">
 
                 <div className="d-flex justify-content-between align-items-center mb-4">
 
                   <h4 className="mb-0">
-                    📦 My Orders
+                    <span className="panel-icon">📦</span> My Orders
                   </h4>
 
                   <button
@@ -366,28 +334,7 @@ function CustomerDashboard() {
 
         </div>
       </section>
-
-      {/* =========================
-          FOOTER
-      ========================== */}
-
-      <footer className="footer">
-        <div className="container text-center">
-
-          <h5>
-            💎 Dhanalakshmi Jewellery
-          </h5>
-
-          <p>
-            Timeless elegance. Crafted with tradition.
-          </p>
-
-          <p className="copyright">
-            © 2026 Dhanalakshmi Jewellery
-          </p>
-
-        </div>
-      </footer>
+      <Footer />
 
     </div>
   );

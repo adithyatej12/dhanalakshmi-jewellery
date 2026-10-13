@@ -1,208 +1,165 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import API from "../services/api";
 
-function Jewellery() {
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import ProductCard from "../components/ProductCard";
+import Reveal from "../components/Reveal";
 
+function Jewellery() {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [sort, setSort] = useState("featured");
 
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-
     API.get("/products")
-      .then((response) => {
-        setProducts(response.data);
-      })
-      .catch((error) => {
-        console.error("Error loading jewellery:", error);
-        setError("Unable to load jewellery collection.");
-      });
-
+      .then((response) => setProducts(response.data || []))
+      .catch(() => setError("Unable to load jewellery collection."));
   }, []);
+
+  // Deep-link support: /jewellery?category=Rings (used by Home tiles).
+  // Only apply when the backend actually has that category.
+  useEffect(() => {
+    const fromUrl = searchParams.get("category");
+    if (!fromUrl || products.length === 0) return;
+    const known = new Set(
+      products.map((p) => (p.category || "").toLowerCase())
+    );
+    const match = products
+      .map((p) => p.category)
+      .find((c) => c && c.toLowerCase() === fromUrl.toLowerCase());
+    if (match && known.has(match.toLowerCase())) setActiveCategory(match);
+  }, [searchParams, products]);
+
+  const categories = useMemo(() => {
+    const set = new Set(
+      products.map((p) => p.category).filter(Boolean)
+    );
+    return ["All", ...Array.from(set)];
+  }, [products]);
+
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+
+    let list = products.filter((p) => {
+      const matchesQuery =
+        !q ||
+        `${p.name} ${p.description} ${p.category}`
+          .toLowerCase()
+          .includes(q);
+      const matchesCategory =
+        activeCategory === "All" || p.category === activeCategory;
+      return matchesQuery && matchesCategory;
+    });
+
+    list = [...list];
+    if (sort === "price-asc") list.sort((a, b) => a.price - b.price);
+    if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
+    if (sort === "name") list.sort((a, b) => a.name.localeCompare(b.name));
+
+    return list;
+  }, [products, query, activeCategory, sort]);
 
   return (
     <div>
+      <Navbar />
 
-      {/* =========================
-          NAVIGATION
-      ========================== */}
-
-      <nav className="navbar navbar-dark jewellery-navbar">
-
+      <section className="page-hero">
         <div className="container">
-
-          <span
-            className="navbar-brand fw-bold"
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate("/")}
-          >
-            💎 Dhanalakshmi Jewellery
-          </span>
-
-          <div>
-
-            <button
-              className="btn btn-outline-light me-2"
-              onClick={() => navigate("/")}
-            >
-              Home
-            </button>
-
-            <button
-              className="btn btn-outline-light"
-              onClick={() => navigate("/customer")}
-            >
-              My Account
-            </button>
-
-          </div>
-
+          <p className="section-subtitle" style={{ color: "var(--gold-light)" }}>
+            The Collection
+          </p>
+          <h1>Our Jewellery</h1>
+          <p>
+            Every piece is BIS-hallmarked, hand-finished, and made to be
+            treasured for generations.
+          </p>
         </div>
-
-      </nav>
-
-
-      {/* =========================
-          COLLECTION
-      ========================== */}
+      </section>
 
       <section className="products-section">
-
         <div className="container">
-
-          <div className="text-center mb-5">
-
-            <p className="section-subtitle">
-              DHANALAKSHMI JEWELLERY
-            </p>
-
-            <h1>
-              Our Collection
-            </h1>
-
-            <p className="text-muted">
-              Discover jewellery crafted for life's most special moments.
-            </p>
-
+          {/* Search */}
+          <div className="filter-bar">
+            <span style={{ color: "var(--gold-deep)" }}>⌕</span>
+            <input
+              type="text"
+              placeholder="Search rings, necklaces, bangles…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <select
+              className="form-select"
+              style={{
+                maxWidth: 170,
+                border: "none",
+                background: "transparent",
+                fontSize: "0.88rem",
+                color: "var(--muted)",
+              }}
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              aria-label="Sort products"
+            >
+              <option value="featured">Featured</option>
+              <option value="price-asc">Price: Low → High</option>
+              <option value="price-desc">Price: High → Low</option>
+              <option value="name">Name: A → Z</option>
+            </select>
           </div>
 
+          {/* Category chips */}
+          <div className="chip-row">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                className={`chip${activeCategory === cat ? " active" : ""}`}
+                onClick={() => setActiveCategory(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
 
-          {/* Error Message */}
+          {error && <div className="alert alert-danger">{error}</div>}
 
-          {error && (
-            <div className="alert alert-danger">
-              {error}
+          {visible.length === 0 && !error && (
+            <div className="empty-state">
+              <div className="empty-icon">✦</div>
+              <h4>No pieces found</h4>
+              <p className="text-muted">
+                Try a different search or category.
+              </p>
+              <button
+                className="btn jewellery-button mt-3"
+                onClick={() => {
+                  setQuery("");
+                  setActiveCategory("All");
+                }}
+              >
+                Clear Filters
+              </button>
             </div>
           )}
 
-
-          {/* =========================
-              PRODUCT CARDS
-          ========================== */}
-
           <div className="row g-4">
-
-            {products.map((product) => (
-
-              <div
-                className="col-md-6 col-lg-3"
-                key={product.id}
-              >
-
-                <div className="card product-card h-100">
-
-                  {/* Product Image */}
-
-                  <div className="product-image">
-
-                    <div className="placeholder-image">
-                      💎
-                    </div>
-
-                  </div>
-
-
-                  {/* Product Information */}
-
-                  <div className="card-body d-flex flex-column">
-
-                    <small className="text-muted">
-                      {product.category}
-                    </small>
-
-                    <h5 className="card-title mt-2">
-                      {product.name}
-                    </h5>
-
-                    <p className="card-text text-muted">
-                      {product.description}
-                    </p>
-
-
-                    {/* Price + View */}
-
-                    <div className="mt-auto">
-
-                      <div className="d-flex justify-content-between align-items-center">
-
-                        <span className="product-price">
-                          ₹{Number(product.price).toLocaleString("en-IN")}
-                        </span>
-
-                        <button
-                          className="btn jewellery-button"
-                          onClick={() =>
-                            navigate(`/product/${product.id}`)
-                          }
-                        >
-                          View
-                        </button>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
+            {visible.map((product, i) => (
+              <div className="col-md-6 col-lg-3" key={product.id}>
+                <Reveal delay={Math.min(i, 8) * 60} className="h-100">
+                  <ProductCard product={product} />
+                </Reveal>
               </div>
-
             ))}
-
           </div>
-
         </div>
-
       </section>
 
-
-      {/* =========================
-          FOOTER
-      ========================== */}
-
-      <footer className="footer">
-
-        <div className="container text-center">
-
-          <h5>
-            💎 Dhanalakshmi Jewellery
-          </h5>
-
-          <p>
-            Timeless elegance. Crafted with tradition.
-          </p>
-
-          <p className="copyright">
-            © 2026 Dhanalakshmi Jewellery
-          </p>
-
-        </div>
-
-      </footer>
-
+      <Footer />
     </div>
   );
 }

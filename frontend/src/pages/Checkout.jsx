@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+
 function Checkout() {
 
   const navigate = useNavigate();
@@ -128,71 +131,40 @@ function Checkout() {
   return (
     <div>
 
-      {/* Navbar */}
-
-      <nav className="navbar navbar-dark jewellery-navbar">
-
-        <div className="container">
-
-          <span
-            className="navbar-brand fw-bold"
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate("/")}
-          >
-            💎 Dhanalakshmi Jewellery
-          </span>
-
-
-          <div>
-
-            <button
-              className="btn btn-outline-light me-2"
-              onClick={() => navigate("/jewellery")}
-            >
-              Jewellery
-            </button>
-
-
-            <button
-              className="btn btn-outline-light"
-              onClick={() => navigate("/cart")}
-            >
-              🛒 Cart
-            </button>
-
-          </div>
-
-        </div>
-
-      </nav>
+      <Navbar />
 
 
       {/* Checkout */}
 
-      <section className="auth-page">
+      <section className="page-hero">
 
         <div className="container">
 
-          <div className="text-center mb-5">
+          <p className="section-subtitle" style={{ color: "var(--gold-light)" }}>
+            Almost Yours
+          </p>
 
-            <div className="auth-logo">
-              💎
-            </div>
+          <h1>
+            Checkout
+          </h1>
 
-            <h1>
-              Checkout
-            </h1>
+          <p>
+            Complete your jewellery order — insured delivery, always.
+          </p>
 
-            <p className="text-muted">
-              Complete your jewellery order
-            </p>
+        </div>
 
-          </div>
+      </section>
+
+
+      <section className="products-section">
+
+        <div className="container">
 
 
           {error && (
 
-            <div className="alert alert-danger">
+            <div className="alert alert-danger mb-4">
 
               {error}
 
@@ -208,10 +180,10 @@ function Checkout() {
 
             <div className="col-md-6 mb-4">
 
-              <div className="card product-card p-4">
+              <div className="panel-card lux-form">
 
                 <h4 className="mb-4">
-                  📦 Delivery Details
+                  <span className="panel-icon">📦</span> Delivery Details
                 </h4>
 
 
@@ -285,10 +257,10 @@ function Checkout() {
 
             <div className="col-md-5 mb-4">
 
-              <div className="card product-card p-4">
+              <div className="panel-card lux-form">
 
                 <h4 className="mb-4">
-                  🛒 Order Summary
+                  <span className="panel-icon">🛒</span> Order Summary
                 </h4>
 
 
@@ -356,27 +328,7 @@ function Checkout() {
       </section>
 
 
-      {/* Footer */}
-
-      <footer className="footer">
-
-        <div className="container text-center">
-
-          <h5>
-            💎 Dhanalakshmi Jewellery
-          </h5>
-
-          <p>
-            Timeless elegance. Crafted with tradition.
-          </p>
-
-          <p className="copyright">
-            © 2026 Dhanalakshmi Jewellery
-          </p>
-
-        </div>
-
-      </footer>
+      <Footer />
 
     </div>
   );
