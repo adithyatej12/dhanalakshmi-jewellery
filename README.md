@@ -119,9 +119,13 @@ Open the Vite URL (usually `http://localhost:5173`) and log in with a demo accou
 - **Backend:** `backend/Dockerfile` (multi-stage Maven → JRE 17) + `render.yaml` for one-click Render deploys. Set the env vars above in the Render dashboard; `PORT` is picked up automatically.
 - **Frontend:** build with `VITE_API_URL=https://<your-backend>/api npm run build`, then deploy `dist/` to Cloudflare Pages/Workers or any static host. Remember to add the frontend URL to the backend's `FRONTEND_URL`.
 
+## Documentation
+
+- [Portal Walkthrough (PDF)](docs/dhanalakshmi-portal-walkthrough.pdf) — guided tour of the customer and admin journeys, demo script, and troubleshooting.
+
 ## Screenshots
 
-_Coming soon — the storefront was recently restyled; screenshots to be added after deployment._
+_Coming soon — screenshots of the restyled storefront to be added after deployment._
 
 ## Author
 
