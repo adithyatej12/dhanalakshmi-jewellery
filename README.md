@@ -1,98 +1,93 @@
 # Dhanalakshmi Jewellery
 
-A full-stack jewellery e-commerce application built with React, Spring Boot, and MySQL.
+A full-stack jewellery e-commerce portal — browse collections, manage a cart, place orders, and run the store from an admin dashboard. Built as a freelance-style project with React, Spring Boot, and MySQL.
 
-## Features
+> **Live demo:** coming soon — currently running locally. The app is deployment-ready (Dockerfile + Render blueprint included).
 
-- Customer registration and email OTP verification
-- JWT-based login and authentication
-- Forgot password and password reset
-- BCrypt password hashing
-- Role-based customer and administrator access
-- Jewellery product browsing and management
-- Shopping cart and checkout
-- Order management and status updates
-- Stock validation and inventory updates
-- Email notifications using SMTP
+## What it does
 
-## Technology Stack
+**Shoppers**
+- Register with email OTP verification, log in with JWT
+- Browse the jewellery collection with search, category filters, and sorting
+- Product detail pages with specs and related pieces
+- Cart, checkout with delivery details, and order history
+- Forgot-password flow with OTP reset
 
-- **Frontend:** React, Vite, Bootstrap 5, Axios, React Router
-- **Backend:** Java 17, Spring Boot, Spring Security
-- **Authentication:** JWT, BCrypt
-- **Database:** MySQL, Spring Data JPA, Hibernate
-- **Email:** Spring Mail, Gmail SMTP
-- **Version Control:** Git and GitHub
+**Store owners (admin)**
+- Dashboard with order stats and revenue overview
+- Add, edit, and manage products in the catalogue
+- Update order statuses
 
-## Architecture
+## Demo accounts
 
-```text
-Customer / Administrator
-          |
-          v
-    React Frontend
-          |
-       REST API
-          |
-          v
-    Spring Boot Backend
-          |
-    Spring Security + JWT
-          |
-          v
-    Spring Data JPA
-          |
-          v
-         MySQL
-          |
-          +---- Email OTP via SMTP
+| Role     | Email                  | Password    |
+|----------|------------------------|-------------|
+| Customer | demo@dhanalakshmi.com  | TempPass123 |
+| Admin    | admin@dhanalakshmi.com | TempPass123 |
+
+If the admin account doesn't exist yet, create it:
+
+```sql
+INSERT INTO users (name, email, password, role, verified)
+VALUES ('Store Admin', 'admin@dhanalakshmi.com',
+'$2b$10$WXtsGMPKCW3cCBgE5.OuCuDvaXz12Y78C1Sy/QJc41uR4YDXY/PLy',
+'ADMIN', 1);
 ```
 
-## Getting Started
+(The password hash above is `TempPass123` encoded with BCrypt.)
+
+## Tech stack
+
+- **Frontend:** React 18, Vite, React Router, Axios, Bootstrap 5 — restyled with a luxury espresso/gold/ivory theme (Playfair Display + Jost)
+- **Backend:** Java 17, Spring Boot, Spring Security, Spring Data JPA / Hibernate
+- **Auth:** JWT (JJWT) + BCrypt password hashing + email OTP via Gmail SMTP
+- **Database:** MySQL
+- **Deploy:** Docker + `render.yaml` blueprint (Render free tier), static frontend (Cloudflare)
+
+## Run it locally
 
 ### Prerequisites
 
-- Java 17
-- Maven
-- Node.js and npm
-- MySQL
+Java 17, Maven, Node.js + npm, MySQL.
 
-### 1. Clone the repository
+### 1. Clone and create the database
 
 ```bash
 git clone https://github.com/adithyatej12/dhanalakshmi-jewellery.git
 cd dhanalakshmi-jewellery
 ```
 
-### 2. Create the database
-
 ```sql
 CREATE DATABASE authentication_db;
 ```
 
-### 3. Configure environment variables
+### 2. Set environment variables
 
-Configure the following variables locally before starting the backend:
+The backend reads these from the environment (never committed to Git):
 
-- `DB_PASSWORD` — MySQL password
-- `MAIL_USERNAME` — Gmail account for sending email
-- `MAIL_PASSWORD` — Gmail App Password
-- `JWT_SECRET` — JWT signing secret
+| Variable      | What it is                                    |
+|---------------|-----------------------------------------------|
+| `DB_PASSWORD` | Your local MySQL root password                |
+| `DB_URL`      | Optional — defaults to `jdbc:mysql://localhost:3306/authentication_db` |
+| `DB_USER`     | Optional — defaults to `root`                 |
+| `JWT_SECRET`  | **Must be at least 32 characters.** Shorter secrets make every login fail (JJWT's `hmacShaKeyFor` throws `WeakKeyException` below 256 bits) |
+| `MAIL_USERNAME` / `MAIL_PASSWORD` | Gmail address + [App Password](https://myaccount.google.com/apppasswords) for OTP emails |
+| `FRONTEND_URL` | Optional — allowed CORS origin, defaults to `http://localhost:5173` |
 
-Never commit actual credentials to GitHub.
+Tip: put the exports in `~/.zshrc` (or `~/.bashrc`) so every terminal picks them up.
 
-### 4. Start the backend
+### 3. Start the backend
 
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
-Backend URL: `http://localhost:8080`
+Wait for `Started BackendApplication` → API at `http://localhost:8080`.
 
-### 5. Start the frontend
+### 4. Start the frontend
 
-Open a separate terminal:
+In a second terminal:
 
 ```bash
 cd frontend
@@ -100,43 +95,34 @@ npm install
 npm run dev
 ```
 
-Open the URL printed by Vite, normally `http://localhost:5173`.
+Open the Vite URL (usually `http://localhost:5173`) and log in with a demo account.
 
-## Application Workflow
+## API overview
 
-1. Register a customer account.
-2. Verify the email using an OTP.
-3. Log in securely.
-4. Browse jewellery products and add items to the cart.
-5. Place an order with delivery details.
-6. Use the administrator dashboard to manage products and orders.
-7. Reset a forgotten password through the OTP flow.
+| Area     | Base path            | Notes                                    |
+|----------|----------------------|------------------------------------------|
+| Auth     | `/api/auth`          | register, login, verify-otp, resend-otp, forgot/reset-password |
+| Products | `/api/products`      | Public browsing                          |
+| Customer | `/api/customer`      | Profile, orders (authenticated)          |
+| Orders   | `/api/orders`        | Order placement and lookup                |
+| Admin    | `/api/admin/**`      | Products + order management — `ADMIN` role only |
 
-## Security
+## Security notes
 
-- Passwords are stored using BCrypt hashing.
-- JWT is used for authenticated API requests.
-- Administrative operations are protected by role-based authorization.
-- OTP expiry and resend cooldown are implemented.
-- Credentials are configured through environment variables.
+- Passwords hashed with BCrypt; never stored or logged in plain text
+- JWT signed with HS256; roles are reloaded from the database on every request, so client-side role tampering grants nothing
+- `/api/admin/**` is enforced server-side with `hasRole("ADMIN")` — the React route guards are UX only
+- Registration always creates `USER` accounts; there is no API path to self-promote to admin
 
-## Testing
+## Deploying
 
-The following workflows have been manually tested:
+- **Backend:** `backend/Dockerfile` (multi-stage Maven → JRE 17) + `render.yaml` for one-click Render deploys. Set the env vars above in the Render dashboard; `PORT` is picked up automatically.
+- **Frontend:** build with `VITE_API_URL=https://<your-backend>/api npm run build`, then deploy `dist/` to Cloudflare Pages/Workers or any static host. Remember to add the frontend URL to the backend's `FRONTEND_URL`.
 
-- Registration and OTP verification
-- Login
-- Checkout and order creation
-- Administrator order management
-- Forgot-password and password-reset flow
+## Screenshots
 
-## Future Enhancements
-
-- Automated test coverage
-- Online payment gateway
-- Product image upload
-- Cloud deployment and CI/CD
+_Coming soon — the storefront was recently restyled; screenshots to be added after deployment._
 
 ## Author
 
-GitHub: [adithyatej12](https://github.com/adithyatej12)
+**Adithya Tej B M** — [github.com/adithyatej12](https://github.com/adithyatej12)
