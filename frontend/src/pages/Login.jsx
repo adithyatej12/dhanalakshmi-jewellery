@@ -54,9 +54,11 @@ function Login() {
       localStorage.removeItem("token");
       localStorage.removeItem("userRole");
 
+      // No response = backend unreachable (e.g. not running), not a wrong password
       setError(
-        error.response?.data ||
-        "Invalid email or password"
+        error.response
+          ? error.response.data || "Invalid email or password"
+          : "Can't reach the server. Start the backend (mvn spring-boot:run), then try again."
       );
     }
   };
